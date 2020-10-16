@@ -1,3 +1,22 @@
+"""
+Work of 
+- Devang Upadhyay[trident-dev], IIT Kharagpur [devangupadhyay231@iitkgp.ac.in] 
+- Prof. Mrigank Sharad, RMSOEE, IIT Kharagpur [mriganksh@gmail.com]
+- Prof. Manoj K Mondal, RMSOEE, IIT Kharagpur [manoj@see.iitkgp.ac.in]
+- Prof. K. Pathak,              IIT Kahargpur [khanindra@mining.iitkgp.ac.in]
+
+The following contains the crux of the software that was deployed in the Machines laboratory
+MongoDB connections and other services have been trucated and reduced to local databases
+User can log into the Adminatrative Panel with the ::
+                                 user_name: admin
+                                 password:  admin#
+
+####---------------------------------------------------------------
+##  DeepAttend - A Face Recognition Based Attendance System
+####---------------------------------------------------------------
+"""
+
+#%%
 import tkinter as tk
 from tkinter import *
 import cv2
@@ -9,14 +28,16 @@ import pandas as pd
 import datetime
 import time
 
-#####Window is our Main frame of system
+#%%
 window = tk.Tk()
 window.title("DeepAttend: A Facial Recognition Based Attendance System")
-
+#-----TBU:: Icon image creation is a fuss in several environments-----#
+icon_DA = PhotoImage(file='DeepAttend.png')
+window.tk.call('wm', 'iconphoto', window._w, icon_DA)
+#window.iconbitmap('DeepAttend.ico') #----- code for Windows, but fails in Linux----# 
 window.geometry('1280x720')
 window.configure(background='gray15')
 
-####GUI for manually fill attendance
 
 def manually_fill():
     global sb
@@ -24,7 +45,7 @@ def manually_fill():
     #sb.iconbitmap('AMS.ico')
     sb.title("Enter subject name:")
     sb.geometry('580x320')
-    sb.configure(background='snow')
+    sb.configure(background='gray15')
 
     def err_screen_for_subject():
 
@@ -35,7 +56,7 @@ def manually_fill():
         ec.geometry('300x100')
         ec.iconbitmap('AMS.ico')
         ec.title('Warning!!')
-        ec.configure(background='snow')
+        ec.configure(background='gray15')
         Label(ec, text='Please enter your subject name!!!', fg='red', bg='white', font=('times', 16, ' bold ')).pack()
         Button(ec, text='OK', command=ec_delete, fg="black", bg="lawn green", width=9, height=1, activebackground="Red",
                font=('times', 15, ' bold ')).place(x=90, y=50)
@@ -46,9 +67,7 @@ def manually_fill():
         timeStamp = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S')
         Time = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S')
         Hour, Minute, Second = timeStamp.split(":")
-        ####Creatting csv of attendance
 
-        ##Create table for Attendance
         date_for_DB = datetime.datetime.fromtimestamp(ts).strftime('%Y_%m_%d')
         global subb
         subb=SUB_ENTRY.get()
@@ -56,7 +75,7 @@ def manually_fill():
 
         import pymysql.connections
 
-        ###Connect to the database
+        ###Connecting to the database
         try:
             global cursor
             connection = pymysql.connect(host='localhost', user='root', password='', db='manually_fill_attendance')
@@ -77,7 +96,7 @@ def manually_fill():
 
 
         try:
-            cursor.execute(sql)  ##for create a table
+            cursor.execute(sql)  
         except Exception as ex:
             print(ex)  #
 
@@ -86,10 +105,10 @@ def manually_fill():
         else:
             sb.destroy()
             MFW = tk.Tk()
-            MFW.iconbitmap('AMS.ico')
+            MFW.tk.call('wm', 'iconphoto', MFQ._w, icon_DA)
             MFW.title("Manually attendance of "+ str(subb))
             MFW.geometry('880x470')
-            MFW.configure(background='snow')
+            MFW.configure(background='gray15')
 
             def del_errsc2():
                 errsc2.destroy()
@@ -98,9 +117,10 @@ def manually_fill():
                 global errsc2
                 errsc2 = tk.Tk()
                 errsc2.geometry('330x100')
-                errsc2.iconbitmap('AMS.ico')
+                errsc2.tk.call('wm', 'iconphoto', errsc2._w, icon_DA)
+                #errsc2.iconbitmap('AMS.ico')
                 errsc2.title('Warning!!')
-                errsc2.configure(background='snow')
+                errsc2.configure(background='gray15')
                 Label(errsc2, text='Please enter Student & Enrollment!!!', fg='red', bg='white',
                       font=('times', 16, ' bold ')).pack()
                 Button(errsc2, text='OK', command=del_errsc2, fg="black", bg="lawn green", width=9, height=1,
@@ -157,7 +177,7 @@ def manually_fill():
             def create_csv():
                 import csv
                 cursor.execute("select * from " + DB_table_name + ";")
-                csv_name='C:/Users/user/Attendace_management_system-master/Attendance/Manually Attendance/'+DB_table_name+'.csv'
+                csv_name='/home/trident/DeepAttend/Attendance/Manually Attendance/'+DB_table_name+'.csv'
                 with open(csv_name, "w") as csv_file:
                     csv_writer = csv.writer(csv_file)
                     csv_writer.writerow([i[0] for i in cursor.description])  # write headers
@@ -211,7 +231,7 @@ def manually_fill():
 
             def attf():
                 import subprocess
-                subprocess.Popen(r'explorer /select,"C:\Users\user\Attendace_management_system-master\Attendance\Manually Attendance\-------Check atttendance-------"')
+                subprocess.Popen(r'explorer /select,"Attendance\Manually Attendance\-------Check atttendance-------"')
 
             attf = tk.Button(MFW,  text="Check Sheets",command=attf,fg="black"  ,bg="lawn green"  ,width=12  ,height=1 ,activebackground = "Red" ,font=('times', 14, ' bold '))
             attf.place(x=730, y=410)
@@ -232,7 +252,6 @@ def manually_fill():
     fill_manual_attendance.place(x=250, y=160)
     sb.mainloop()
 
-##For clear textbox
 def clear():
     txt.delete(first=0, last=22)
 
@@ -244,13 +263,12 @@ def err_screen():
     global sc1
     sc1 = tk.Tk()
     sc1.geometry('300x100')
-    sc1.iconbitmap('AMS.ico')
+    #sc1.iconbitmap('AMS.ico')
     sc1.title('Warning!!')
     sc1.configure(background='snow')
     Label(sc1,text='Enrollment & Name required!!!',fg='red',bg='white',font=('times', 16, ' bold ')).pack()
     Button(sc1,text='OK',command=del_sc1,fg="black"  ,bg="lawn green"  ,width=9  ,height=1, activebackground = "Red" ,font=('times', 15, ' bold ')).place(x=90,y= 50)
 
-##Error screen2
 def del_sc2():
     sc2.destroy()
 def err_screen1():
@@ -263,7 +281,6 @@ def err_screen1():
     Label(sc2,text='Please enter your subject name!!!',fg='red',bg='white',font=('times', 16, ' bold ')).pack()
     Button(sc2,text='OK',command=del_sc2,fg="black"  ,bg="lawn green"  ,width=9  ,height=1, activebackground = "Red" ,font=('times', 15, ' bold ')).place(x=90,y= 50)
 
-###For take images for datasets
 def take_img():
     l1 = txt.get()
     l2 = txt2.get()
@@ -287,7 +304,7 @@ def take_img():
                     # incrementing sample number
                     sampleNum = sampleNum + 1
                     # saving the captured face in the dataset folder
-                    cv2.imwrite("TrainingImage/ " + Name + "." + Enrollment + '.' + str(sampleNum) + ".jpg",
+                    cv2.imwrite("/home/trident/DeepAttend/TrainingImage/" + Name + "." + Enrollment + '.' + str(sampleNum) + ".jpg",
                                 gray[y:y + h, x:x + w])
                     cv2.imshow('Frame', img)
                 # wait for 100 miliseconds
@@ -302,12 +319,12 @@ def take_img():
             Date = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
             Time = datetime.datetime.fromtimestamp(ts).strftime('%H:%M:%S')
             row = [Enrollment, Name, Date, Time]
-            with open('StudentDetails\StudentDetails.csv', 'a+') as csvFile:
+            with open('/home/trident/DeepAttend/StudentDetails/StudentDetails.csv', 'a+') as csvFile:
                 writer = csv.writer(csvFile, delimiter=',')
                 writer.writerow(row)
                 csvFile.close()
             res = "Images Saved for Enrollment : " + Enrollment + " Name : " + Name
-            Notification.configure(text=res, bg="SpringGreen3", width=50, font=('times', 18, 'bold'))
+            Notification.configure(text=res, bg="SpringGreen3", width=80, font=('times', 18, 'bold'))
             Notification.place(x=250, y=400)
         except FileExistsError as F:
             f = 'Student Data already exists'
@@ -315,11 +332,10 @@ def take_img():
             Notification.place(x=450, y=400)
 
 
-###for choose subject and fill attendance
 def subjectchoose():
     def Fillattendances():
         sub=tx.get()
-        now = time.time()  ###For calculate seconds of video
+        now = time.time() 
         future = now + 20
         if time.time() < future:
             if sub == '':
@@ -335,11 +351,13 @@ def subjectchoose():
 
                 harcascadePath = "haarcascade_frontalface_default.xml"
                 faceCascade = cv2.CascadeClassifier(harcascadePath)
-                df = pd.read_csv("StudentDetails\StudentDetails.csv")
+                df = pd.read_csv("/home/trident/DeepAttend/StudentDetails/StudentDetails.csv")
                 cam = cv2.VideoCapture(0)
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 col_names = ['Enrollment', 'Name', 'Date', 'Time']
                 attendance = pd.DataFrame(columns=col_names)
+                print(attendance)
+                print("Here")
                 while True:
                     ret, im = cam.read()
                     gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
@@ -389,15 +407,14 @@ def subjectchoose():
                 print(attendance)
                 attendance.to_csv(fileName, index=False)
 
-                ##Create table for Attendance
                 date_for_DB = datetime.datetime.fromtimestamp(ts).strftime('%Y_%m_%d')
                 DB_Table_name = str( Subject + "_" + date_for_DB + "_Time_" + Hour + "_" + Minute + "_" + Second)
                 import pymysql.connections
 
-                ###Connect to the database
                 try:
                     global cursor
-                    connection = pymysql.connect(host='localhost', user='root', password='', db='Face_reco_fill')
+                    connection = pymysql.connect(host='localhost', user='root', 
+                                                 password='', db='Face_reco_fill')
                     cursor = connection.cursor()
                 except Exception as e:
                     print(e)
@@ -411,18 +428,17 @@ def subjectchoose():
                      PRIMARY KEY (ID)
                      );
                 """
-                ####Now enter attendance in Database
                 insert_data =  "INSERT INTO " + DB_Table_name + " (ID,ENROLLMENT,NAME,DATE,TIME) VALUES (0, %s, %s, %s,%s)"
                 VALUES = (str(Id), str(aa), str(date), str(timeStamp))
                 try:
-                    cursor.execute(sql)  ##for create a table
-                    cursor.execute(insert_data, VALUES)##For insert data into table
+                    cursor.execute(sql) 
+                    cursor.execute(insert_data, VALUES)
                 except Exception as ex:
                     print(ex)  #
 
                 M = 'Attendance filled Successfully'
-                Notifica.configure(text=M, bg="Green", fg="white", width=33, font=('times', 15, 'bold'))
-                Notifica.place(x=20, y=250)
+                AA_notif.configure(text=M, bg="Green", fg="white", width=33, font=('times', 15, 'bold'))
+                AA_notif.place(x=20, y=250)
 
                 cam.release()
                 cv2.destroyAllWindows()
@@ -432,7 +448,7 @@ def subjectchoose():
                 root = tkinter.Tk()
                 root.title("Attendance of " + Subject)
                 root.configure(background='snow')
-                cs = 'C:/Users/user/Attendace_management_system-master/' + fileName
+                cs = '/home/trident/DeepAttend/' + fileName
                 with open(cs, newline="") as file:
                     reader = csv.reader(file)
                     r = 0
@@ -440,55 +456,57 @@ def subjectchoose():
                     for col in reader:
                         c = 0
                         for row in col:
-                            # i've added some styling
-                            label = tkinter.Label(root, width=8, height=1, fg="black", font=('times', 15, ' bold '),
-                                                  bg="lawn green", text=row, relief=tkinter.RIDGE)
+                            
+                            label = tkinter.Label(root, width=8, height=1, fg="black", 
+                                                  font=('times', 15, ' bold '),
+                                                  bg="Royalblue4", text=row, relief=tkinter.RIDGE)
                             label.grid(row=r, column=c)
                             c += 1
                         r += 1
                 root.mainloop()
                 print(attendance)
 
-    ###windo is frame for subject chooser
-    windo = tk.Tk()
-    windo.iconbitmap('AMS.ico')
-    windo.title("Enter subject name...")
-    windo.geometry('580x320')
-    windo.configure(background='snow')
-    Notifica = tk.Label(windo, text="Attendance filled Successfully", bg="Green", fg="white", width=33,
+    AAwindow = tk.Tk()
+    AAwindow.title("Automatic Attendance:: Subject Information")
+    AAwindow.geometry('640x320')
+    AAwindow.configure(background='gray15')
+    AA_notif = tk.Label(AAwindow, text="Attendance filled Successfully", bg="Green", fg="white", width=33,
                             height=2, font=('times', 15, 'bold'))
 
     def Attf():
         import subprocess
-        subprocess.Popen(r'explorer /select,"C:\Users\user\Attendace_management_system-master\Attendance\-------Check atttendance-------"')
+        subprocess.Popen(r'explorer /select,"Attendance\-------Check atttendance-------"')
 
-    attf = tk.Button(windo,  text="Check Sheets",command=Attf,fg="black"  ,bg="lawn green"  ,width=12  ,height=1 ,activebackground = "Red" ,font=('times', 14, ' bold '))
+    attf = tk.Button(AAwindow,  text="Check Sheets",command=Attf,fg="black"
+                     ,bg="chartreuse"  ,width=12  ,height=1 ,activebackground = "blue violet" 
+                     ,font=('times', 14, ' bold '))
     attf.place(x=430, y=255)
 
-    sub = tk.Label(windo, text="Enter Subject", width=15, height=2, fg="white", bg="blue2", font=('times', 15, ' bold '))
+    sub = tk.Label(AAwindow, text="Enter Subject", width=15, height=2, fg="black", bg="Royalblue4", 
+                   font=('times', 15, ' bold '))
     sub.place(x=30, y=100)
 
-    tx = tk.Entry(windo, width=20, bg="yellow", fg="red", font=('times', 23, ' bold '))
+    tx = tk.Entry(AAwindow, width=20, bg="turquoise3", fg="azure", font=('times', 23, ' bold '))
     tx.place(x=250, y=105)
 
-    fill_a = tk.Button(windo, text="Fill Attendance", fg="white",command=Fillattendances, bg="deep pink", width=20, height=2,
-                       activebackground="Red", font=('times', 15, ' bold '))
+    fill_a = tk.Button(AAwindow, text="Fill Attendance", fg="black",command=Fillattendances, 
+                       bg="chartreuse", width=20, height=2,
+                       activebackground="blue violet", font=('times', 15, ' bold '))
     fill_a.place(x=250, y=160)
-    windo.mainloop()
+    AAwindow.mainloop()
 
 def admin_panel():
     win = tk.Tk()
-    win.iconbitmap('AMS.ico')
-    win.title("LogIn")
+    win.title("DeepAttend :: Administrator Panel")
     win.geometry('880x420')
-    win.configure(background='snow')
+    win.configure(background='gray14')
 
     def log_in():
         username = un_entr.get()
         password = pw_entr.get()
 
-        if username == 'K. Pathak' :
-            if password == 'machinerylab':
+        if username == 'admin' :
+            if password == 'admin#':
                 win.destroy()
                 import csv
                 import tkinter
@@ -496,7 +514,7 @@ def admin_panel():
                 root.title("Student Details")
                 root.configure(background='snow')
 
-                cs = 'C:/Users/user/Attendace_management_system-master/StudentDetails/StudentDetails.csv'
+                cs = '/home/trident/DeepAttend/StudentDetails/StudentDetails.csv'
                 with open(cs, newline="") as file:
                     reader = csv.reader(file)
                     r = 0
@@ -504,8 +522,8 @@ def admin_panel():
                     for col in reader:
                         c = 0
                         for row in col:
-                            # i've added some styling
-                            label = tkinter.Label(root, width=8, height=1, fg="black", font=('times', 15, ' bold '),
+                            label = tkinter.Label(root, width=8, height=1, fg="black", font=('times', 15, 
+                                                                                             ' bold '),
                                                   bg="lawn green", text=row, relief=tkinter.RIDGE)
                             label.grid(row=r, column=c)
                             c += 1
@@ -537,31 +555,29 @@ def admin_panel():
     def c00():
         un_entr.delete(first=0, last=22)
 
-    un_entr = tk.Entry(win, width=20, bg="yellow", fg="red", font=('times', 23, ' bold '))
+    un_entr = tk.Entry(win, width=20, bg="turquoise3", fg="azure", font=('times', 23, ' bold '))
     un_entr.place(x=290, y=55)
 
     def c11():
         pw_entr.delete(first=0, last=22)
 
-    pw_entr = tk.Entry(win, width=20,show="*", bg="yellow", fg="red", font=('times', 23, ' bold '))
+    pw_entr = tk.Entry(win, width=20,show="*", bg="turquoise3", fg="azure", font=('times', 23, ' bold '))
     pw_entr.place(x=290, y=155)
 
-    c0 = tk.Button(win, text="Clear", command=c00, fg="black", bg="deep pink", width=10, height=1,
-                            activebackground="Red", font=('times', 15, ' bold '))
+    c0 = tk.Button(win, text="Clear", command=c00, fg="black", bg="RoyalBlue4", width=10, height=1,
+                            activebackground="blue violet", font=('times', 15, ' bold '))
     c0.place(x=690, y=55)
 
-    c1 = tk.Button(win, text="Clear", command=c11, fg="black", bg="deep pink", width=10, height=1,
-                   activebackground="Red", font=('times', 15, ' bold '))
+    c1 = tk.Button(win, text="Clear", command=c11, fg="black", bg="RoyalBlue4", width=10, height=1,
+                   activebackground="blue violet", font=('times', 15, ' bold '))
     c1.place(x=690, y=155)
 
-    Login = tk.Button(win, text="LogIn", fg="black", bg="lime green", width=20,
+    Login = tk.Button(win, text="LogIn", fg="black", bg="RoyalBlue4", width=20,
                        height=2,
-                       activebackground="Red",command=log_in, font=('times', 15, ' bold '))
+                       activebackground="blue violet",command=log_in, font=('times', 15, ' bold '))
     Login.place(x=290, y=250)
     win.mainloop()
 
-
-###For train the model
 def trainimg():
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     global detector
@@ -570,16 +586,16 @@ def trainimg():
         global faces,Id
         faces, Id = getImagesAndLabels("TrainingImage")
     except Exception as e:
-        l='please make "TrainingImage" folder & put Images'
-        Notification.configure(text=l, bg="SpringGreen3", width=50, font=('times', 18, 'bold'))
+        l='Error:: ID::(ImagesNotFound) :: suggested -- Take the training images first or create "TrainingImage" folder, place the Images'
+        Notification.configure(text=l, bg="Red", width=50, font=('times', 18, 'bold'))
         Notification.place(x=350, y=400)
 
     recognizer.train(faces, np.array(Id))
     try:
-        recognizer.save("TrainingImageLabel\Trainner.yml")
+        recognizer.save("/home/trident/DeepAttend/TrainingImageLabel/Trainner.yml")
     except Exception as e:
         q='Please make "TrainingImageLabel" folder'
-        Notification.configure(text=q, bg="SpringGreen3", width=50, font=('times', 18, 'bold'))
+        Notification.configure(text=q, bg="Red", width=50, font=('times', 18, 'bold'))
         Notification.place(x=350, y=400)
 
     res = "Model Trained"  # +",".join(str(f) for f in Id)
@@ -611,7 +627,6 @@ def getImagesAndLabels(path):
 
 window.grid_rowconfigure(0, weight=1)
 window.grid_columnconfigure(0, weight=1)
-#window.iconbitmap('AMS.ico')
 
 def on_closing():
     from tkinter import messagebox
@@ -641,16 +656,19 @@ txt = tk.Entry(window, validate="key", width=20, bg="turquoise3", fg="azure", fo
 txt['validatecommand'] = (txt.register(testVal),'%P','%d')
 txt.place(x=520, y=210)
 
-lbl2 = tk.Label(window, text="Student's Name:", width=20, fg="black", bg="RoyalBlue4", height=2, font=('times', 15, ' bold '))
+lbl2 = tk.Label(window, text="Student's Name:", width=20, fg="black", bg="RoyalBlue4", height=2, 
+                font=('times', 15, ' bold '))
 lbl2.place(x=200, y=310)
 
 txt2 = tk.Entry(window, width=20, bg="turquoise3", fg="azure", font=('times', 25, ' bold '))
 txt2.place(x=520, y=310)
 
-clearButton = tk.Button(window, text="Clear",command=clear,fg="black"  ,bg="RoyalBlue4"  ,width=10  ,height=1 ,activebackground = "Red" ,font=('times', 15, ' bold '))
+clearButton = tk.Button(window, text="Clear",command=clear,fg="black"  ,bg="RoyalBlue4"  ,width=10 
+                        ,height=1 ,activebackground = "Red" ,font=('times', 15, ' bold '))
 clearButton.place(x=950, y=210)
 
-clearButton1 = tk.Button(window, text="Clear",command=clear1,fg="black"  ,bg="RoyalBlue4"  ,width=10 ,height=1, activebackground = "Red" ,font=('times', 15, ' bold '))
+clearButton1 = tk.Button(window, text="Clear",command=clear1,fg="black"  ,bg="RoyalBlue4"  ,width=10
+                         ,height=1, activebackground = "Red" ,font=('times', 15, ' bold '))
 clearButton1.place(x=950, y=310)
 
 AP = tk.Button(window, text="Students Registered",command=admin_panel,fg="black"  ,bg="cyan"  ,width=25 ,
@@ -665,7 +683,7 @@ trainImg = tk.Button(window, text="Train Images",fg="black",command=trainimg ,bg
                      ,height=2, activebackground = "blue violet" ,font=('times', 15, ' bold '))
 trainImg.place(x=390, y=500)
 
-FA = tk.Button(window, text="Automatic Attendace",fg="black",command=subjectchoose  ,bg="chartreuse"  
+FA = tk.Button(window, text="Automatic Attendance",fg="black",command=subjectchoose  ,bg="chartreuse"  
                ,width=20  ,height=2, activebackground = "blue violet" ,font=('times', 15, ' bold '))
 FA.place(x=690, y=500)
 

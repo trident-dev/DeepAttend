@@ -6,7 +6,7 @@ DeepAttend was developed for the *Machines Laboratory of IIT Kharagpur* by [**De
 
 ## User Interface Flow
 
-<img src = "/home/trident/DeepAttend/Views/UI_flow.png" />
+<img src = "Views/UI_flow.png" />
 
 ## Installation
 

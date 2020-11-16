@@ -13,7 +13,7 @@ DeepAttend was developed for the *Machines Laboratory of IIT Kharagpur* by [**De
 1. Clone/Download the [repository](https://github.com/trident-dev/DeepAttend.git)
 2. 
 ```bash
-$ pip install requirements.txt
+$ pip install -r requirements.txt
 $ python DeepAttend_run.python
 ```
 
